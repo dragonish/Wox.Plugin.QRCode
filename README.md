@@ -54,6 +54,9 @@ Press `Enter` to start the screenshot, then drag to select the region
 containing the QR Code. Recognition runs automatically once the selection is
 confirmed.
 
+> **macOS:** scanning requires Wox to have the **Screen Recording** permission.
+> Open *System Settings → Privacy & Security → Screen Recording* and enable Wox.
+
 | Action | Description |
 | --- | --- |
 | Start screenshot scan | Take a new screenshot and scan it |
@@ -63,11 +66,14 @@ confirmed.
 ## Requirements
 
 - Wox >= 2.0.0
-- Windows, Linux, or macOS
+- Windows, Linux, or macOS (on macOS, Wox needs **Screen Recording** permission for `qrs`)
 
 The Python runtime dependencies (`qrcode`, `pypng`, `zxing-cpp`) are bundled in
 the released package for Python 3.10–3.15, so nothing needs to be installed by
 hand.
+
+On macOS, grant Wox the **Screen Recording** permission before using `qrs`
+(see [Scan a QR Code from the screen](#scan-a-qr-code-from-the-screen)).
 
 ## Development
 
