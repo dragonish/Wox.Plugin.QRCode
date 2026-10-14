@@ -1,20 +1,21 @@
 {
-    "Id": "{{.Id}}",
+    "Id": "84a696e0-e250-4cf4-b9cc-e45115bb4119",
     "TriggerKeywords": [
-        "{{.TriggerKeyword}}"
+        "qr",
+        "qrs"
     ],
-    "Name": "{{.Name}}",
-    "Description": "{{.Description}}",
-    "Author": "{{.Author}}",
+    "Name": "QRCode",
+    "Description": "Generate a QR Code / Screenshot to scan and recognize the QR Code.",
+    "Author": "dragonish",
     "Version": "0.0.1",
     "MinWoxVersion": "2.0.0",
     "Runtime": "python",
-    "Website": "{{.Website}}",
+    "Website": "https://github.com/dragonish/Wox.Plugin.QRCode",
     "Entry": "main.py",
     "Icon": "relative:images/app.svg",
     "SupportedOS": [
-        "windows",
-        "linux",
-        "darwin"
+        "Windows",
+        "Linux",
+        "Darwin"
     ]
 }

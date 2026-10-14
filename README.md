@@ -1,11 +1,7 @@
-> For developer
-
-    Please run `make init` to initialize the project.
-
-# {{.Name}}
+# QRCode
 
 # Install
 
 ```
-wpm install {{.Name}}
+wpm install QRCode
 ```

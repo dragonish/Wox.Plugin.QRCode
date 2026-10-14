@@ -81,12 +81,12 @@ endif
 
 package: check-init build
 ifeq ($(OS),Windows_NT)
-	if (Test-Path 'wox.plugin.{{.Name}}.zip') { Remove-Item -Force 'wox.plugin.{{.Name}}.zip' }
-	if (Test-Path 'wox.plugin.{{.Name}}.wox') { Remove-Item -Force 'wox.plugin.{{.Name}}.wox' }
-	Compress-Archive -Path '$(DIST_DIR)\*' -DestinationPath 'wox.plugin.{{.Name}}.zip'
-	Move-Item 'wox.plugin.{{.Name}}.zip' 'wox.plugin.{{.Name}}.wox'
+	if (Test-Path 'wox.plugin.qrcode.zip') { Remove-Item -Force 'wox.plugin.qrcode.zip' }
+	if (Test-Path 'wox.plugin.qrcode.wox') { Remove-Item -Force 'wox.plugin.qrcode.wox' }
+	Compress-Archive -Path '$(DIST_DIR)\*' -DestinationPath 'wox.plugin.qrcode.zip'
+	Move-Item 'wox.plugin.qrcode.zip' 'wox.plugin.qrcode.wox'
 	if (Test-Path '$(DIST_DIR)') { Remove-Item -Recurse -Force '$(DIST_DIR)' }
 else
-	cd $(DIST_DIR) && zip -r "../wox.plugin.{{.Name}}.wox" .
+	cd $(DIST_DIR) && zip -r "../wox.plugin.qrcode.wox" .
 	rm -rf $(DIST_DIR)
 endif
