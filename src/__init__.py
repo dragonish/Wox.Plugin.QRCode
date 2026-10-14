@@ -1,4 +1,6 @@
-from .qrcode_main import QRCodePlugin, decode_qr_image, plugin
+"""QRCode Wox plugin source package.
 
-__version__ = "0.1.0"
-__all__ = ["QRCodePlugin", "decode_qr_image", "plugin"]
+Intentionally import-free. Wox loads plugin.json's "Entry" (qrcode_main.py)
+directly and never executes this file, so re-exporting plugin here would be
+dead code that also pulls the runtime dependencies into any `import src`.
+"""
