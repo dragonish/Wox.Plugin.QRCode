@@ -87,8 +87,8 @@ class QRCodePlugin(Plugin):
         if not text:
             return [
                 Result(
-                    title="输入要生成二维码的文本",
-                    sub_title="例如：qr https://example.com",
+                    title="i18n:input_text_title",
+                    sub_title="i18n:input_text_subtitle",
                     icon=WoxImage.new_emoji("🔳"),
                 )
             ]
@@ -98,7 +98,7 @@ class QRCodePlugin(Plugin):
             await self.api.log(ctx, LogLevel.ERROR, f"QR generate failed: {e}")
             return [
                 Result(
-                    title="生成二维码失败",
+                    title="i18n:generate_failed_title",
                     sub_title=str(e),
                     icon=WoxImage.new_emoji("⚠️"),
                 )
@@ -108,7 +108,7 @@ class QRCodePlugin(Plugin):
         return [
             Result(
                 title=_short(text),
-                sub_title="二维码已生成",
+                sub_title="i18n:qr_generated",
                 icon=img,
                 preview=WoxPreview(
                     preview_type=WoxPreviewType.IMAGE,
@@ -116,19 +116,19 @@ class QRCodePlugin(Plugin):
                 ),
                 actions=[
                     ResultAction(
-                        name="复制二维码图片",
+                        name="i18n:action_copy_image",
                         icon=WoxImage.new_emoji("🖼️"),
                         context_data={"png_path": png_path},
                         action=self._action_copy_image,
                     ),
                     ResultAction(
-                        name="复制文本内容",
+                        name="i18n:action_copy_text",
                         icon=WoxImage.new_emoji("📋"),
                         context_data={"text": text},
                         action=self._action_copy_text,
                     ),
                     ResultAction(
-                        name="保存 PNG 到桌面",
+                        name="i18n:action_save_png",
                         icon=WoxImage.new_emoji("💾"),
                         context_data={"png_path": png_path},
                         action=self._action_save_png,
@@ -161,12 +161,12 @@ class QRCodePlugin(Plugin):
     def _scan_results(self) -> list[Result]:
         results = [
             Result(
-                title="框选屏幕区域，识别二维码",
-                sub_title="回车开始截图，框选后自动识别",
+                title="i18n:scan_title",
+                sub_title="i18n:scan_subtitle",
                 icon=WoxImage.new_emoji("🔍"),
                 actions=[
                     ResultAction(
-                        name="开始截图识别",
+                        name="i18n:action_start_scan",
                         icon=WoxImage.new_emoji("📸"),
                         action=self._action_scan,
                     )
@@ -176,7 +176,7 @@ class QRCodePlugin(Plugin):
         for text in self._scan_texts:
             actions = [
                 ResultAction(
-                    name="复制识别结果",
+                    name="i18n:action_copy_result",
                     icon=WoxImage.new_emoji("📋"),
                     context_data={"text": text},
                     action=self._action_copy_text,
@@ -185,7 +185,7 @@ class QRCodePlugin(Plugin):
             if text.startswith(("http://", "https://")):
                 actions.append(
                     ResultAction(
-                        name="在浏览器中打开",
+                        name="i18n:action_open_url",
                         icon=WoxImage.new_emoji("🌐"),
                         context_data={"text": text},
                         action=self._action_open_url,
@@ -194,7 +194,7 @@ class QRCodePlugin(Plugin):
             results.append(
                 Result(
                     title=_short(text),
-                    sub_title="识别结果",
+                    sub_title="i18n:scan_result",
                     icon=WoxImage.new_emoji("✅"),
                     actions=actions,
                 )
@@ -208,16 +208,18 @@ class QRCodePlugin(Plugin):
         )
         if not res.success:
             if res.errmsg:
-                await self.api.notify(ctx, f"截图失败：{res.errmsg}")
+                msg = await self.api.get_translation(ctx, "notify_screenshot_failed")
+                await self.api.notify(ctx, msg.format(res.errmsg))
             return
         try:
             texts = decode_qr_image(res.screenshot_path)
         except Exception as e:
             await self.api.log(ctx, LogLevel.ERROR, f"QR decode failed: {e}")
-            await self.api.notify(ctx, f"识别失败：{e}")
+            msg = await self.api.get_translation(ctx, "notify_recognize_failed")
+            await self.api.notify(ctx, msg.format(e))
             return
         if not texts:
-            await self.api.notify(ctx, "未在截图中识别到二维码")
+            await self.api.notify(ctx, await self.api.get_translation(ctx, "notify_no_qr"))
             return
         self._scan_texts = texts
         await self.api.refresh_query(ctx, RefreshQueryParam(preserve_selected_index=False))
@@ -249,7 +251,8 @@ class QRCodePlugin(Plugin):
         os.makedirs(desktop, exist_ok=True)
         dst = os.path.join(desktop, f"qrcode_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
         shutil.copyfile(src, dst)
-        await self.api.notify(ctx, f"已保存到桌面：{os.path.basename(dst)}")
+        msg = await self.api.get_translation(ctx, "notify_saved_desktop")
+        await self.api.notify(ctx, msg.format(os.path.basename(dst)))
 
     async def _action_open_url(self, ctx: Context, ac: ActionContext) -> None:
         url = (ac.context_data or {}).get("text", "")

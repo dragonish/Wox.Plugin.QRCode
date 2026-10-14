@@ -5,7 +5,7 @@
         "qrs"
     ],
     "Name": "QRCode",
-    "Description": "Generate a QR Code / Screenshot to scan and recognize the QR Code.",
+    "Description": "i18n:plugin_desc",
     "Author": "dragonish",
     "Version": "0.0.1",
     "MinWoxVersion": "2.0.0",
@@ -17,5 +17,47 @@
         "Windows",
         "Linux",
         "Darwin"
-    ]
+    ],
+    "I18n": {
+        "en_US": {
+            "plugin_desc": "Generate a QR Code / Screenshot to scan and recognize the QR Code.",
+            "input_text_title": "Enter the text to generate a QR Code",
+            "input_text_subtitle": "e.g. qr https://example.com",
+            "generate_failed_title": "Failed to generate QR Code",
+            "qr_generated": "QR Code generated",
+            "action_copy_image": "Copy QR Code image",
+            "action_copy_text": "Copy text",
+            "action_save_png": "Save PNG to Desktop",
+            "scan_title": "Select a screen region to scan a QR Code",
+            "scan_subtitle": "Press Enter to start screenshot; scanning runs after selection",
+            "action_start_scan": "Start screenshot scan",
+            "action_copy_result": "Copy scan result",
+            "action_open_url": "Open in browser",
+            "scan_result": "Scan result",
+            "notify_screenshot_failed": "Screenshot failed: {}",
+            "notify_recognize_failed": "Recognition failed: {}",
+            "notify_no_qr": "No QR Code found in the screenshot",
+            "notify_saved_desktop": "Saved to Desktop: {}"
+        },
+        "zh_CN": {
+            "plugin_desc": "生成二维码 / 截图识别二维码。",
+            "input_text_title": "输入要生成二维码的文本",
+            "input_text_subtitle": "例如：qr https://example.com",
+            "generate_failed_title": "生成二维码失败",
+            "qr_generated": "二维码已生成",
+            "action_copy_image": "复制二维码图片",
+            "action_copy_text": "复制文本内容",
+            "action_save_png": "保存 PNG 到桌面",
+            "scan_title": "框选屏幕区域，识别二维码",
+            "scan_subtitle": "回车开始截图，框选后自动识别",
+            "action_start_scan": "开始截图识别",
+            "action_copy_result": "复制识别结果",
+            "action_open_url": "在浏览器中打开",
+            "scan_result": "识别结果",
+            "notify_screenshot_failed": "截图失败：{}",
+            "notify_recognize_failed": "识别失败：{}",
+            "notify_no_qr": "未在截图中识别到二维码",
+            "notify_saved_desktop": "已保存到桌面：{}"
+        }
+    }
 }
