@@ -1,4 +1,4 @@
-from .main import MyPlugin
+from .qrcode_main import MyPlugin
 
 __version__ = "0.1.0"
 __all__ = ["MyPlugin"]
