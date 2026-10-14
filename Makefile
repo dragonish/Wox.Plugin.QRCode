@@ -2,6 +2,7 @@
 
 DIST_DIR := dist
 SRC_DIR := src
+TARGET_PY_VERSIONS := 3.10 3.11 3.12 3.13 3.14 3.15
 
 ifeq ($(OS),Windows_NT)
 SHELL := powershell.exe
@@ -44,17 +45,20 @@ test: check-init
 clean:
 ifeq ($(OS),Windows_NT)
 	if (Test-Path '$(DIST_DIR)') { Remove-Item -Recurse -Force '$(DIST_DIR)' }
+	if (Test-Path 'build') { Remove-Item -Recurse -Force 'build' }
 else
 	rm -rf $(DIST_DIR)
+	rm -rf build
 endif
 
 build: lint format
 ifeq ($(OS),Windows_NT)
 	if (Test-Path '$(DIST_DIR)') { Remove-Item -Recurse -Force '$(DIST_DIR)' }
 	New-Item -ItemType Directory -Force -Path '$(DIST_DIR)\dependencies' | Out-Null
-	uv pip freeze | Out-File -FilePath 'requirements.txt' -Encoding ascii
-	uv pip install -r requirements.txt --target "$(DIST_DIR)\dependencies"
+	uv export --no-dev --no-emit-project --format requirements.txt --no-hashes -o requirements.txt
+	foreach ($$v in '$(TARGET_PY_VERSIONS)' -split ' ') { uv pip install -r requirements.txt --target "build\abi\$$v" --python-version $$v --python-platform windows --only-binary=:all:; Copy-Item "build\abi\$$v\*" -Destination '$(DIST_DIR)\dependencies' -Recurse -Force }
 	Remove-Item -Force 'requirements.txt'
+	Remove-Item -Recurse -Force 'build' -ErrorAction SilentlyContinue
 	Copy-Item '$(SRC_DIR)\*' -Destination '$(DIST_DIR)' -Recurse -Force
 	Get-ChildItem -Path '$(DIST_DIR)\dependencies' -Directory -Recurse | Where-Object { $$_.Name -like '*.dist-info' -or $$_.Name -like '*.egg-info' } | Remove-Item -Recurse -Force
 	Get-ChildItem -Path '$(DIST_DIR)\dependencies' -File -Recurse | Where-Object { $$_.Name -like '__editable__*' -or $$_.Name -eq '.lock' -or $$_.Name -like '*__mypyc*' } | Remove-Item -Force
@@ -66,9 +70,10 @@ ifeq ($(OS),Windows_NT)
 else
 	rm -rf $(DIST_DIR)
 	mkdir -p $(DIST_DIR)/dependencies
-	uv pip freeze > requirements.txt
-	uv pip install -r requirements.txt --target $(DIST_DIR)/dependencies
-	rm requirements.txt
+	uv export --no-dev --no-emit-project --format requirements.txt --no-hashes -o requirements.txt
+	for v in $(TARGET_PY_VERSIONS); do uv pip install -r requirements.txt --target build/abi/$$v --python-version $$v --only-binary=:all:; cp -r build/abi/$$v/* $(DIST_DIR)/dependencies/; done
+	rm -f requirements.txt
+	rm -rf build
 	cp -r $(SRC_DIR)/* $(DIST_DIR)/
 	find $(DIST_DIR)/dependencies \( -type d -name "*.dist-info" -o -type d -name "*.egg-info" \) -exec rm -rf {} +
 	find $(DIST_DIR)/dependencies \( -type f -name "__editable__*" -o -type f -name ".lock" \) -exec rm -f {} +

@@ -5,11 +5,11 @@ import tempfile
 import webbrowser
 from datetime import datetime
 
+import png  # type: ignore[import-untyped]
 import qrcode  # type: ignore[import-untyped]
 import zxingcpp
-from PIL import Image
 from qrcode.constants import ERROR_CORRECT_M  # type: ignore[import-untyped]
-from qrcode.image.pil import PilImage  # type: ignore[import-untyped]
+from qrcode.image.pure import PyPNGImage  # type: ignore[import-untyped]
 from wox_plugin import (
     ActionContext,
     Context,
@@ -36,13 +36,27 @@ def _short(text: str) -> str:
     return text if len(text) <= TITLE_MAX_LEN else text[: TITLE_MAX_LEN - 3] + "..."
 
 
+def image_preview_data(image: WoxImage) -> str:
+    """Serialize a WoxImage for a WoxPreviewType.IMAGE preview.
+
+    The host parses the value as "type:data" (strings.Cut on the first ":").
+    Do not use str(image) here: on Python 3.12+ f-string formatting of the
+    (str, Enum) image_type yields "WoxImageType.ABSOLUTE" instead of
+    "absolute", which the host rejects as an unsupported image type.
+    """
+    return f"{image.image_type.value}:{image.image_data}"
+
+
 def decode_qr_image(path: str) -> list[str]:
     """Decode all QR/barcode payloads from an image file.
 
     Pure function (no Wox runtime needed), so it is unit-testable.
     """
-    with Image.open(path) as img:
-        barcodes = zxingcpp.read_barcodes(img.convert("RGB"))
+    with open(path, "rb") as f:
+        width, height, rows, _info = png.Reader(file=f).asRGBA8()
+        pixels = b"".join(bytes(row) for row in rows)
+    view = zxingcpp.ImageView(pixels, width, height, zxingcpp.ImageFormat.RGBA)
+    barcodes = zxingcpp.read_barcodes(view)
     texts: list[str] = []
     for barcode in barcodes:
         text = (barcode.text or "").strip()
@@ -98,7 +112,7 @@ class QRCodePlugin(Plugin):
                 icon=img,
                 preview=WoxPreview(
                     preview_type=WoxPreviewType.IMAGE,
-                    preview_data=str(img),
+                    preview_data=image_preview_data(img),
                 ),
                 actions=[
                     ResultAction(
@@ -137,8 +151,9 @@ class QRCodePlugin(Plugin):
             )
             qr.add_data(text)
             qr.make(fit=True)
-            img = qr.make_image(image_factory=PilImage, fill_color="black", back_color="white").convert("RGB")
-            img.save(png_path, "PNG")
+            img = qr.make_image(image_factory=PyPNGImage)
+            with open(png_path, "wb") as f:
+                img.save(f)
         return png_path
 
     # ------------------------------------------------------------------ scan
