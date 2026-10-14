@@ -1,13 +1,14 @@
 import hashlib
 import os
+import platform
 import shutil
+import sys
 import tempfile
 import webbrowser
 from datetime import datetime
 
 import png  # type: ignore[import-untyped]
 import qrcode  # type: ignore[import-untyped]
-import zxingcpp
 from qrcode.constants import ERROR_CORRECT_M  # type: ignore[import-untyped]
 from qrcode.image.pure import PyPNGImage  # type: ignore[import-untyped]
 from wox_plugin import (
@@ -28,6 +29,34 @@ from wox_plugin import (
     WoxPreview,
     WoxPreviewType,
 )
+
+
+def _add_platform_native_path() -> None:
+    """Make the bundled native dependencies for this platform importable.
+
+    Wox only adds <plugin>/dependencies to sys.path. Compiled wheels such as
+    zxing-cpp's abi3 build share one file name (zxingcpp.abi3.so) across macOS
+    and Linux, so they cannot be merged into a single directory. They live under
+    dependencies/native/<platform> instead and are selected here. The keys must
+    stay in sync with PLATFORMS in scripts/build_dependencies.py.
+    """
+    system = platform.system()
+    machine = platform.machine().lower()
+    arm = machine in {"arm64", "aarch64"}
+    if system == "Windows":
+        key = "win_arm64" if arm else "win_amd64"
+    elif system == "Darwin":
+        key = "macos_arm64" if arm else "macos_x86_64"
+    elif system == "Linux":
+        key = "linux_arm64" if arm else "linux_x86_64"
+    else:
+        return
+    native_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dependencies", "native", key)
+    if os.path.isdir(native_dir) and native_dir not in sys.path:
+        sys.path.insert(0, native_dir)
+
+
+_add_platform_native_path()
 
 TITLE_MAX_LEN = 120
 
@@ -51,7 +80,11 @@ def decode_qr_image(path: str) -> list[str]:
     """Decode all QR/barcode payloads from an image file.
 
     Pure function (no Wox runtime needed), so it is unit-testable.
+    zxingcpp is imported here rather than at module scope so a platform without
+    a bundled native build still loads the plugin and can generate QR codes.
     """
+    import zxingcpp
+
     with open(path, "rb") as f:
         width, height, rows, _info = png.Reader(file=f).asRGBA8()
         pixels = b"".join(bytes(row) for row in rows)
