@@ -32,14 +32,14 @@ install: check-init
 	uv sync --all-extras
 
 lint: check-init check-dev-deps
-	uv run ruff check src
-	uv run mypy src
+	uv run ruff check src tests
+	uv run mypy src tests
 
 format: check-init check-dev-deps
-	uv run ruff format src
+	uv run ruff format src tests
 
 test: check-init
-	uv run python -m unittest tests/test_friendly_names.py
+	uv run python -m unittest tests/test_qrcode.py
 
 clean:
 ifeq ($(OS),Windows_NT)

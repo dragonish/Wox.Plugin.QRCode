@@ -1,9 +1,9 @@
 [project]
-name = "wox-plugin-template-python"
+name = "wox-plugin-qrcode-python"
 version = "0.0.1"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["wox-plugin==0.0.81"]
+dependencies = ["wox-plugin==0.0.81", "qrcode", "Pillow", "zxing-cpp"]
 
 [project.optional-dependencies]
 dev = ["ruff", "mypy"]
