@@ -39,7 +39,7 @@ format: check-init check-dev-deps
 	uv run ruff format src tests
 
 test: check-init
-	uv run python -m unittest tests/test_qrcode.py
+	uv run python -m unittest tests/test_qrcode.py tests/test_query.py
 
 clean:
 ifeq ($(OS),Windows_NT)

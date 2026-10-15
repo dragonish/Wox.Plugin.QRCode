@@ -60,6 +60,9 @@ _add_platform_native_path()
 
 TITLE_MAX_LEN = 120
 
+# Sub-command (declared in plugin.json Commands) that shows scan results only.
+SCAN_COMMAND = "scan"
+
 
 def _short(text: str) -> str:
     return text if len(text) <= TITLE_MAX_LEN else text[: TITLE_MAX_LEN - 3] + "..."
@@ -109,10 +112,19 @@ class QRCodePlugin(Plugin):
         self.api = init_params.api
 
     async def query(self, ctx: Context, query: Query) -> list[Result]:
-        keyword = (query.trigger_keyword or "").lower()
-        if keyword == "qrs":
+        # Trigger keywords are user-editable in Wox settings, so the matched keyword
+        # value must never decide the mode: renaming or deleting a dedicated scan
+        # keyword would otherwise make the screenshot scan unreachable. "scan" comes
+        # from plugin.json Commands (users cannot edit it), and an empty search means
+        # no text was given, which is the scan case for any trigger keyword.
+        command = (query.command or "").strip().lower()
+        text = (query.search or "").strip()
+
+        if command == SCAN_COMMAND:
             return self._scan_results()
-        return await self._generate_results(ctx, (query.search or "").strip())
+        if not text:
+            return self._scan_results() + await self._generate_results(ctx, "")
+        return await self._generate_results(ctx, text)
 
     # ------------------------------------------------------------------ generate
 

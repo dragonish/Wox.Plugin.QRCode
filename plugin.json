@@ -1,8 +1,13 @@
 {
     "Id": "84a696e0-e250-4cf4-b9cc-e45115bb4119",
     "TriggerKeywords": [
-        "qr",
-        "qrs"
+        "qr"
+    ],
+    "Commands": [
+        {
+            "Command": "scan",
+            "Description": "i18n:command_scan_desc"
+        }
     ],
     "Name": "QRCode",
     "Description": "i18n:plugin_desc",
@@ -21,6 +26,7 @@
     "I18n": {
         "en_US": {
             "plugin_desc": "Generate a QR Code / Screenshot to scan and recognize the QR Code.",
+            "command_scan_desc": "Scan a QR Code from a screenshot",
             "input_text_title": "Enter the text to generate a QR Code",
             "input_text_subtitle": "e.g. qr https://example.com",
             "generate_failed_title": "Failed to generate QR Code",
@@ -41,6 +47,7 @@
         },
         "zh_CN": {
             "plugin_desc": "生成二维码 / 截图识别二维码。",
+            "command_scan_desc": "截图识别二维码",
             "input_text_title": "输入要生成二维码的文本",
             "input_text_subtitle": "例如：qr https://example.com",
             "generate_failed_title": "生成二维码失败",
