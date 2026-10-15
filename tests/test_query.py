@@ -2,23 +2,10 @@ import tempfile
 import unittest
 from typing import cast
 
-from wox_plugin import Context, PublicAPI, Query, QueryEnv, QueryType, Selection
+from wox_plugin import Context, PublicAPI
 
 from src.qrcode_main import QRCodePlugin
-from tests.fakes import FakeAPI
-
-
-def _query(trigger_keyword: str = "", command: str = "", search: str = "") -> Query:
-    return Query(
-        id="test",
-        type=QueryType.INPUT,
-        raw_query=trigger_keyword,
-        selection=Selection(),
-        env=QueryEnv(),
-        trigger_keyword=trigger_keyword,
-        command=command,
-        search=search,
-    )
+from tests.fakes import FakeAPI, make_query
 
 
 class TestQueryRouting(unittest.IsolatedAsyncioTestCase):
@@ -39,17 +26,17 @@ class TestQueryRouting(unittest.IsolatedAsyncioTestCase):
 
     async def test_empty_search_offers_scan_for_any_trigger_keyword(self):
         for keyword in ("qr", "qrs", "renamed-in-settings"):
-            results = await self.plugin.query(Context.new(), _query(trigger_keyword=keyword))
+            results = await self.plugin.query(Context.new(), make_query(trigger_keyword=keyword))
             self.assertEqual(results[0].sub_title, "i18n:scan_subtitle")
             self.assertEqual(results[1].title, "i18n:input_text_title")
 
     async def test_scan_command_returns_only_scan_results(self):
-        results = await self.plugin.query(Context.new(), _query(trigger_keyword="qr", command="scan"))
+        results = await self.plugin.query(Context.new(), make_query(trigger_keyword="qr", command="scan"))
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].sub_title, "i18n:scan_subtitle")
 
     async def test_search_text_generates_qr_code(self):
-        results = await self.plugin.query(Context.new(), _query(trigger_keyword="qr", search="hello"))
+        results = await self.plugin.query(Context.new(), make_query(trigger_keyword="qr", search="hello"))
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].sub_title, "i18n:qr_generated")
 

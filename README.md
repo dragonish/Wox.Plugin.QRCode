@@ -14,6 +14,10 @@ screenshot. Everything runs locally, no network access required.
   screen region, and decodes every QR Code / barcode in it with
   [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp). Results can be copied, and
   URLs can be opened in the browser in one keystroke.
+- **Theme aware** — the QR Code follows the active Wox theme: in a dark theme it is
+  drawn with light modules on a dark background instead of a glaring white square.
+  Copied and saved images stay black and white by default for the widest scanner
+  compatibility, and both behaviors can be changed in the plugin settings.
 - **Localized** — English and Simplified Chinese, following the Wox language.
 
 ## Screenshot
@@ -39,6 +43,11 @@ qr https://example.com
 Type the trigger keyword `qr` followed by the text to encode. The result icon
 *is* the QR Code, and the preview pane shows it full size.
 
+The displayed QR Code follows the current Wox theme, so a dark theme gets light
+modules on a dark background rather than a bright white square. If the theme
+palette would not leave enough contrast for a scannable code, the plugin falls
+back to plain black and white.
+
 The trigger keyword is editable in the Wox plugin settings; any keyword works,
 because the mode is picked from the query itself, never from the keyword text.
 
@@ -47,6 +56,17 @@ because the mode is picked from the query itself, never from the keyword text.
 | Copy QR Code image | Put the QR Code on the clipboard as an image |
 | Copy text | Copy the encoded text |
 | Save PNG to Desktop | Write `qrcode_<timestamp>.png` to the Desktop |
+
+Copied and saved images are plain black on white so any scanner can read them.
+Enable **Also theme exported images** in the plugin settings to export the
+themed colors instead — some scanners cannot read an inverted QR Code.
+
+### Settings
+
+| Setting | Default | Description |
+| --- | --- | --- |
+| Match the Wox theme | On | Draw the displayed QR Code with the theme palette |
+| Also theme exported images | Off | Use the theme palette for copied and saved images too |
 
 ### Scan a QR Code from the screen
 
@@ -74,7 +94,7 @@ confirmed.
 
 ## Requirements
 
-- Wox >= 2.4.2
+- Wox >= 2.4.5 (theme colors come from `get_theme_colors()`)
 - Windows, Linux, or macOS (on macOS, Wox needs **Screen Recording** permission for `qr scan`)
 
 The Python runtime dependencies (`qrcode`, `pypng`, `zxing-cpp`) are bundled in

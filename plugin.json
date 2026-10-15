@@ -13,7 +13,7 @@
     "Description": "i18n:plugin_desc",
     "Author": "dragonish",
     "Version": "1.1.0",
-    "MinWoxVersion": "2.4.2",
+    "MinWoxVersion": "2.4.5",
     "Runtime": "python",
     "Website": "https://github.com/dragonish/Wox.Plugin.QRCode",
     "Entry": "qrcode_main.py",
@@ -22,6 +22,28 @@
         "Windows",
         "Linux",
         "Darwin"
+    ],
+    "SettingDefinitions": [
+        {
+            "Type": "checkbox",
+            "Value": {
+                "Key": "theme_colors",
+                "Label": "i18n:setting_theme_colors_label",
+                "DefaultValue": "true",
+                "Tooltip": "i18n:setting_theme_colors_tooltip",
+                "Style": {}
+            }
+        },
+        {
+            "Type": "checkbox",
+            "Value": {
+                "Key": "theme_colors_export",
+                "Label": "i18n:setting_theme_export_label",
+                "DefaultValue": "false",
+                "Tooltip": "i18n:setting_theme_export_tooltip",
+                "Style": {}
+            }
+        }
     ],
     "I18n": {
         "en_US": {
@@ -43,7 +65,12 @@
             "notify_screenshot_failed": "Screenshot failed: {}",
             "notify_recognize_failed": "Recognition failed: {}",
             "notify_no_qr": "No QR Code found in the screenshot",
-            "notify_saved_desktop": "Saved to Desktop: {}"
+            "notify_saved_desktop": "Saved to Desktop: {}",
+            "notify_export_failed": "Failed to prepare the QR Code image: {}",
+            "setting_theme_colors_label": "Match the Wox theme",
+            "setting_theme_colors_tooltip": "In a dark theme the QR Code is drawn with light modules on a dark background. Turn off to always use black and white.",
+            "setting_theme_export_label": "Also theme exported images",
+            "setting_theme_export_tooltip": "Off by default: exported images stay black and white for the widest scanner compatibility. Some scanners cannot read inverted QR Codes."
         },
         "zh_CN": {
             "plugin_desc": "生成二维码 / 截图识别二维码。",
@@ -64,7 +91,12 @@
             "notify_screenshot_failed": "截图失败：{}",
             "notify_recognize_failed": "识别失败：{}",
             "notify_no_qr": "未在截图中识别到二维码",
-            "notify_saved_desktop": "已保存到桌面：{}"
+            "notify_saved_desktop": "已保存到桌面：{}",
+            "notify_export_failed": "生成二维码图片失败：{}",
+            "setting_theme_colors_label": "二维码配色跟随 Wox 主题",
+            "setting_theme_colors_tooltip": "夜间主题下二维码使用浅色模块配深色底，更不刺眼。关闭后始终使用黑白。",
+            "setting_theme_export_label": "复制 / 保存的图片也使用主题配色",
+            "setting_theme_export_tooltip": "默认关闭：导出图片保持黑白，扫码兼容性最好。部分扫码器无法识别反向二维码。"
         }
     }
 }
