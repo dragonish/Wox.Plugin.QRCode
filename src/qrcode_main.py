@@ -107,6 +107,8 @@ class QRCodePlugin(Plugin):
     def __init__(self) -> None:
         # Decoded payloads from the latest screenshot scan, rendered by query().
         self._scan_texts: list[str] = []
+        # Resolved lazily on first use; see _get_cache_dir().
+        self._cache_dir: str = ""
 
     async def init(self, ctx: Context, init_params: PluginInitParams) -> None:
         self.api = init_params.api
@@ -182,10 +184,27 @@ class QRCodePlugin(Plugin):
             )
         ]
 
-    async def _make_qr_png(self, ctx: Context, text: str) -> str:
-        # wox-plugin 0.0.81 has no get_cache_folder(); use a stable temp dir instead.
-        cache_dir = os.path.join(tempfile.gettempdir(), "wox-qrcode")
+    async def _get_cache_dir(self, ctx: Context) -> str:
+        """Resolve the plugin cache directory once, then reuse it.
+
+        Wox owns ~/.wox/cache/plugins/<plugin-id>/ and deletes it when the
+        plugin is uninstalled, so generated PNGs stay in the plugin's own cache
+        instead of a shared temp directory. get_cache_folder() returns "" on
+        failure and joining "" would drop the PNG into the process working
+        directory, so fall back to a stable temp dir in that case.
+        """
+        if self._cache_dir:
+            return self._cache_dir
+        cache_dir = await self.api.get_cache_folder(ctx)
+        if not cache_dir:
+            cache_dir = os.path.join(tempfile.gettempdir(), "wox-qrcode")
+            await self.api.log(ctx, LogLevel.WARNING, f"get_cache_folder returned empty, falling back to {cache_dir}")
         os.makedirs(cache_dir, exist_ok=True)
+        self._cache_dir = cache_dir
+        return cache_dir
+
+    async def _make_qr_png(self, ctx: Context, text: str) -> str:
+        cache_dir = await self._get_cache_dir(ctx)
         digest = hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
         png_path = os.path.join(cache_dir, f"qr_{digest}.png")
         if not os.path.exists(png_path):

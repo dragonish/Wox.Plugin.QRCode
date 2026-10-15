@@ -74,7 +74,7 @@ confirmed.
 
 ## Requirements
 
-- Wox >= 2.0.0
+- Wox >= 2.4.2
 - Windows, Linux, or macOS (on macOS, Wox needs **Screen Recording** permission for `qr scan`)
 
 The Python runtime dependencies (`qrcode`, `pypng`, `zxing-cpp`) are bundled in
